@@ -1,0 +1,143 @@
+# AgroEdge AI — Sensor Telemetry Schema
+# Version: 1.0
+#
+# Defines all sensor fields, their valid ranges, units, and ThingSpeak channel mappings.
+# This file is the authoritative source for sensor data validation.
+# The data_pipeline/validation layer reads this file at runtime.
+
+schema_version: "1.0"
+
+fields:
+
+  # ── Identity ────────────────────────────────────────────────────────────────
+
+  record_id:
+    type: string
+    required: true
+    description: "UUID generated at ingestion. Unique per reading."
+
+  farm_id:
+    type: string
+    required: true
+    description: "Identifies the farm. Supports multi-farm deployments."
+
+  field_id:
+    type: string
+    required: true
+    description: "Identifies the crop plot within the farm."
+
+  node_id:
+    type: string
+    required: true
+    description: "ESP32 device identifier."
+
+  collected_at:
+    type: datetime_iso8601_utc
+    required: true
+    description: "UTC timestamp when the sensor reading was taken."
+
+  ingested_at:
+    type: datetime_iso8601_utc
+    required: true
+    description: "UTC timestamp when the Raspberry Pi received the record."
+
+  # ── Core Sensors (required — ESP32 Phase 1) ──────────────────────────────────
+
+  soil_moisture_percent:
+    type: float
+    required: true
+    unit: "%"
+    min: 0.0
+    max: 100.0
+    thingspeak_field: 1
+    description: "Volumetric soil moisture content at root zone depth."
+
+  soil_temperature_celsius:
+    type: float
+    required: true
+    unit: "°C"
+    min: -10.0
+    max: 80.0
+    thingspeak_field: 2
+    description: "Soil temperature at root zone depth (DS18B20 sensor)."
+
+  air_temperature_celsius:
+    type: float
+    required: true
+    unit: "°C"
+    min: -10.0
+    max: 60.0
+    thingspeak_field: 3
+    description: "Ambient air temperature (DHT22 sensor)."
+
+  air_humidity_percent:
+    type: float
+    required: true
+    unit: "%"
+    min: 0.0
+    max: 100.0
+    thingspeak_field: 4
+    description: "Relative ambient humidity (DHT22 sensor)."
+
+  light_intensity_lux:
+    type: float
+    required: true
+    unit: "lux"
+    min: 0.0
+    max: 150000.0
+    thingspeak_field: 5
+    description: "Photosynthetically active light intensity (BH1750 sensor)."
+
+  water_tank_level_percent:
+    type: float
+    required: true
+    unit: "%"
+    min: 0.0
+    max: 100.0
+    thingspeak_field: 6
+    description: "Irrigation water tank fill level. Used as a safety check before actuation."
+
+  # ── Optional Sensors (nullable — hardware may not be installed) ───────────────
+
+  water_flow_rate_lph:
+    type: float
+    required: false
+    unit: "L/hr"
+    min: 0.0
+    max: 10000.0
+    thingspeak_field: 7
+    description: "Water flow rate through the irrigation pipe (flow sensor)."
+
+  soil_ph:
+    type: float
+    required: false
+    unit: "pH"
+    min: 0.0
+    max: 14.0
+    thingspeak_field: 8
+    description: "Soil acidity/alkalinity. Reserved ThingSpeak field 8. Future sensor."
+
+  # ── Future Sensors (not in ThingSpeak channel — additional channel needed) ────
+
+  rainfall_mm:
+    type: float
+    required: false
+    unit: "mm"
+    min: 0.0
+    max: 500.0
+    description: "Rainfall accumulation since last reading. Future tipping-bucket sensor."
+
+  leaf_wetness_percent:
+    type: float
+    required: false
+    unit: "%"
+    min: 0.0
+    max: 100.0
+    description: "Leaf surface wetness. Indicator for disease risk assessment. Future sensor."
+
+  # ── Metadata ─────────────────────────────────────────────────────────────────
+
+  schema_version:
+    type: string
+    required: true
+    description: "Schema version embedded in every record for forward compatibility."

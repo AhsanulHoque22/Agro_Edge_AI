@@ -1,0 +1,176 @@
+{
+  "crop_type_encoding": {
+    "rice": 0
+  },
+  "disease_labels": [
+    "healthy",
+    "rice_blast",
+    "brown_spot",
+    "bacterial_leaf_blight",
+    "sheath_blight",
+    "tungro",
+    "leaf_scald",
+    "unknown"
+  ],
+  "features": [
+    {
+      "critical": true,
+      "description": "Volumetric soil moisture (%). Primary predictor for irrigation need.",
+      "name": "soil_moisture_percent",
+      "required": true,
+      "source": "sensor",
+      "type": "float"
+    },
+    {
+      "critical": false,
+      "description": "Soil temperature at root zone (\u00b0C).",
+      "name": "soil_temperature_celsius",
+      "required": true,
+      "source": "sensor",
+      "type": "float"
+    },
+    {
+      "critical": false,
+      "description": "Ambient air temperature (\u00b0C). Drives evapotranspiration rate.",
+      "name": "air_temperature_celsius",
+      "required": true,
+      "source": "sensor",
+      "type": "float"
+    },
+    {
+      "critical": false,
+      "description": "Relative humidity (%). Component of VPD calculation.",
+      "name": "air_humidity_percent",
+      "required": true,
+      "source": "sensor",
+      "type": "float"
+    },
+    {
+      "critical": false,
+      "description": "Light intensity (lux). Affects stomatal opening and transpiration.",
+      "name": "light_intensity_lux",
+      "required": true,
+      "source": "sensor",
+      "type": "float"
+    },
+    {
+      "critical": true,
+      "description": "Water tank fill level (%). Safety constraint \u2014 no irrigation if tank is low.",
+      "name": "water_tank_level_percent",
+      "required": true,
+      "source": "sensor",
+      "type": "float"
+    },
+    {
+      "critical": true,
+      "description": "Integer-encoded rice growth stage (0\u20137). Determines water requirement window.",
+      "encoding_map": "growth_stage_encoding",
+      "name": "growth_stage_encoded",
+      "required": true,
+      "source": "farm_metadata",
+      "type": "int"
+    },
+    {
+      "critical": false,
+      "description": "Days elapsed since planting date. Refines growth stage within a stage window.",
+      "name": "days_after_transplanting",
+      "required": true,
+      "source": "derived",
+      "type": "int"
+    },
+    {
+      "critical": false,
+      "description": "Days remaining until harvest. Negative values indicate overdue harvest.",
+      "name": "days_to_maturity",
+      "required": true,
+      "source": "derived",
+      "type": "int"
+    },
+    {
+      "critical": false,
+      "description": "Vapor Pressure Deficit (kPa). Quantifies plant water stress from heat and dryness.",
+      "formula": "(1 - air_humidity_percent/100) * 0.6108 * exp(17.27 * air_temperature_celsius / (air_temperature_celsius + 237.3))",
+      "name": "vpd_kpa",
+      "required": true,
+      "source": "derived",
+      "type": "float"
+    },
+    {
+      "critical": false,
+      "description": "Hour when reading was taken (0\u201323). Captures diurnal irrigation patterns.",
+      "name": "hour_of_day",
+      "required": true,
+      "source": "derived",
+      "type": "int"
+    },
+    {
+      "critical": false,
+      "description": "Day of week (0=Monday, 6=Sunday). Low importance; included for completeness.",
+      "name": "day_of_week",
+      "required": false,
+      "source": "derived",
+      "type": "int"
+    },
+    {
+      "critical": false,
+      "description": "Month of year (1\u201312). Captures seasonal variation in water demand.",
+      "name": "month",
+      "required": false,
+      "source": "derived",
+      "type": "int"
+    },
+    {
+      "critical": true,
+      "description": "Days elapsed since the last irrigation event. Prevents over-irrigation.",
+      "name": "days_since_last_irrigation",
+      "required": true,
+      "source": "irrigation_log",
+      "type": "int"
+    }
+  ],
+  "growth_stage_dat_ranges": {
+    "0_germination": [
+      0,
+      7
+    ],
+    "1_seedling": [
+      7,
+      25
+    ],
+    "2_tillering": [
+      25,
+      55
+    ],
+    "3_stem_elongation": [
+      55,
+      75
+    ],
+    "4_booting": [
+      75,
+      90
+    ],
+    "5_heading_flowering": [
+      90,
+      110
+    ],
+    "6_grain_filling": [
+      110,
+      130
+    ],
+    "7_ripening_maturity": [
+      130,
+      160
+    ]
+  },
+  "growth_stage_encoding": {
+    "0_germination": 0,
+    "1_seedling": 1,
+    "2_tillering": 2,
+    "3_stem_elongation": 3,
+    "4_booting": 4,
+    "5_heading_flowering": 5,
+    "6_grain_filling": 6,
+    "7_ripening_maturity": 7
+  },
+  "schema_version": "1.0"
+}

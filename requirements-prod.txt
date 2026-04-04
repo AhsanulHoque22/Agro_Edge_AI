@@ -1,0 +1,5 @@
+# Production / Pi dashboard — install after base:
+#   pip install -r requirements.txt -r requirements-prod.txt
+#
+# Gunicorn serves the Flask app (see scripts/run_dashboard_gunicorn.sh).
+gunicorn>=22.0.0

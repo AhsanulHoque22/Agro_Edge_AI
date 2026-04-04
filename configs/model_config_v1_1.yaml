@@ -1,0 +1,90 @@
+schema_version: "1.1"
+
+irrigation_model:
+  model_type: random_forest
+  version: "1.1.0"
+
+  classification_target: irrigation_needed
+  regression_target: irrigation_duration_minutes
+
+  # Must match configs/feature_schema_v1_1.yaml order exactly.
+  features:
+    - soil_moisture_percent
+    - soil_temperature_celsius
+    - air_temperature_celsius
+    - air_humidity_percent
+    - light_intensity_lux
+    - water_tank_level_percent
+    - growth_stage_encoded
+    - days_after_transplanting
+    - days_to_maturity
+    - vpd_kpa
+    - hour_of_day
+    - day_of_week
+    - month
+    - days_since_last_irrigation
+    - soil_moisture_percent_t_minus_1
+    - soil_moisture_percent_t_minus_2
+    - delta_soil_moisture_percent_t_minus_1
+    - delta_soil_moisture_percent_t_minus_2
+    - time_since_last_irrigation_hours
+    - last_irrigation_duration_minutes
+    - rain_expected_flag
+    - temp_humidity_index
+
+  splits:
+    train: 0.70
+    validation: 0.20
+    test: 0.10
+  random_state: 42
+
+  classifier_hyperparameters:
+    n_estimators: 180
+    max_depth: 14
+    min_samples_split: 5
+    min_samples_leaf: 2
+    max_features: sqrt
+    class_weight: balanced
+    random_state: 42
+    n_jobs: -1
+
+  regressor_hyperparameters:
+    n_estimators: 180
+    max_depth: 14
+    min_samples_split: 5
+    min_samples_leaf: 2
+    max_features: sqrt
+    random_state: 42
+    n_jobs: -1
+
+  cross_validation:
+    strategy: k_fold
+    n_splits: 5
+    shuffle: true
+    random_state: 42
+
+  export:
+    format: joblib
+    compression: 3
+    include_feature_names: true
+
+  minimum_performance:
+    classifier_f1_score: 0.80
+    classifier_accuracy: 0.82
+    regressor_r2_score: 0.75
+    regressor_mae_minutes: 10.0
+
+disease_model:
+  status: planned
+  model_type: mobilenetv2
+  version: "1.0.0"
+  input_image_size: [224, 224]
+  export_format: tflite
+  disease_classes:
+    - healthy
+    - rice_blast
+    - brown_spot
+    - bacterial_leaf_blight
+    - sheath_blight
+    - tungro
+    - leaf_scald

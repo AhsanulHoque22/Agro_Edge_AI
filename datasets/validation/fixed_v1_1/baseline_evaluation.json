@@ -1,0 +1,134 @@
+{
+  "classifier_metrics": {
+    "accuracy": 0.9445069366329208,
+    "confusion_matrix": [
+      [
+        1323,
+        92
+      ],
+      [
+        56,
+        1196
+      ]
+    ],
+    "f1_score": 0.9417322834645669,
+    "precision": 0.9285714285714286,
+    "recall": 0.9552715654952076,
+    "roc_auc": 0.9896058885288839
+  },
+  "cross_validation": {
+    "cv_accuracy_mean": 0.9473258458159041,
+    "cv_accuracy_std": 0.0016899507400176981,
+    "cv_f1_mean": 0.94527721256376,
+    "cv_f1_std": 0.0018347064969958544,
+    "cv_mae_mean": 5.056793834517249,
+    "cv_mae_std": 0.0854800194766738,
+    "cv_r2_mean": 0.9403006686874787,
+    "cv_r2_std": 0.0012669559052795815,
+    "cv_rmse_mean": 6.660961678959841,
+    "cv_rmse_std": 0.09978875874687773
+  },
+  "dataset_info": {
+    "class_distribution_test": {
+      "negative_0": 1415,
+      "positive_1": 1252
+    },
+    "n_features": 14,
+    "test_size": 2667,
+    "train_size": 17333
+  },
+  "fixed_validation_metrics": {
+    "classifier_metrics": {
+      "accuracy": 0.9702337023370233,
+      "confusion_matrix": [
+        [
+          2019,
+          80
+        ],
+        [
+          41,
+          1925
+        ]
+      ],
+      "f1_score": 0.9695290858725761,
+      "precision": 0.9600997506234414,
+      "recall": 0.9791454730417091,
+      "roc_auc": 0.9969990069388271
+    },
+    "dataset_info": {
+      "class_distribution": {
+        "negative_0": 2099,
+        "positive_1": 1966
+      },
+      "n_features": 14,
+      "size": 4065
+    },
+    "regressor_metrics": {
+      "mae_minutes": 4.145944264353523,
+      "mae_minutes_when_irrigating": 5.121824303964983,
+      "r2_score": 0.9616008390453545,
+      "r2_when_irrigating": 0.9094375363676054,
+      "rmse_minutes": 5.486674406080788
+    }
+  },
+  "fixed_validation_path": "/home/ahsanul-hoque/Desktop/AgroEdge/agroedge_ai/datasets/validation/fixed_v1_1/validation_records.parquet",
+  "gate_failures": [],
+  "gates_passed": true,
+  "per_stage_metrics": {
+    "0": {
+      "accuracy": 0.9358108108108109,
+      "count": 296,
+      "f1": 0.9364548494983278,
+      "mae_minutes": 3.7195155386112524
+    },
+    "1": {
+      "accuracy": 0.9555555555555556,
+      "count": 315,
+      "f1": 0.950354609929078,
+      "mae_minutes": 4.2960896214172815
+    },
+    "2": {
+      "accuracy": 0.9251497005988024,
+      "count": 334,
+      "f1": 0.9122807017543859,
+      "mae_minutes": 4.415621402211393
+    },
+    "3": {
+      "accuracy": 0.9393939393939394,
+      "count": 330,
+      "f1": 0.9354838709677419,
+      "mae_minutes": 4.996334463645432
+    },
+    "4": {
+      "accuracy": 0.96,
+      "count": 400,
+      "f1": 0.9620853080568721,
+      "mae_minutes": 5.301914544864048
+    },
+    "5": {
+      "accuracy": 0.9384615384615385,
+      "count": 390,
+      "f1": 0.9347826086956522,
+      "mae_minutes": 6.482731821768551
+    },
+    "6": {
+      "accuracy": 0.9553571428571429,
+      "count": 336,
+      "f1": 0.9494949494949495,
+      "mae_minutes": 4.964016009775988
+    },
+    "7": {
+      "accuracy": 0.943609022556391,
+      "count": 266,
+      "f1": 0.9458483754512635,
+      "mae_minutes": 4.321459803525922
+    }
+  },
+  "regressor_metrics": {
+    "mae_minutes": 4.891001749896871,
+    "mae_minutes_when_irrigating": 5.889630064860703,
+    "r2_score": 0.9384654228824143,
+    "r2_when_irrigating": 0.8676832584236365,
+    "rmse_minutes": 6.606284193979793
+  }
+}

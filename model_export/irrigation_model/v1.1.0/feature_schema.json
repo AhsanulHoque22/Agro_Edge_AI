@@ -1,0 +1,217 @@
+{
+  "crop_type_encoding": {
+    "rice": 0
+  },
+  "disease_labels": [
+    "healthy",
+    "rice_blast",
+    "brown_spot",
+    "bacterial_leaf_blight",
+    "sheath_blight",
+    "tungro",
+    "leaf_scald",
+    "unknown"
+  ],
+  "features": [
+    {
+      "critical": true,
+      "name": "soil_moisture_percent",
+      "required": true,
+      "source": "sensor",
+      "type": "float"
+    },
+    {
+      "critical": false,
+      "name": "soil_temperature_celsius",
+      "required": true,
+      "source": "sensor",
+      "type": "float"
+    },
+    {
+      "critical": false,
+      "name": "air_temperature_celsius",
+      "required": true,
+      "source": "sensor",
+      "type": "float"
+    },
+    {
+      "critical": false,
+      "name": "air_humidity_percent",
+      "required": true,
+      "source": "sensor",
+      "type": "float"
+    },
+    {
+      "critical": false,
+      "name": "light_intensity_lux",
+      "required": true,
+      "source": "sensor",
+      "type": "float"
+    },
+    {
+      "critical": true,
+      "name": "water_tank_level_percent",
+      "required": true,
+      "source": "sensor",
+      "type": "float"
+    },
+    {
+      "critical": true,
+      "encoding_map": "growth_stage_encoding",
+      "name": "growth_stage_encoded",
+      "required": true,
+      "source": "farm_metadata",
+      "type": "int"
+    },
+    {
+      "critical": false,
+      "name": "days_after_transplanting",
+      "required": true,
+      "source": "derived",
+      "type": "int"
+    },
+    {
+      "critical": false,
+      "name": "days_to_maturity",
+      "required": true,
+      "source": "derived",
+      "type": "int"
+    },
+    {
+      "critical": false,
+      "name": "vpd_kpa",
+      "required": true,
+      "source": "derived",
+      "type": "float"
+    },
+    {
+      "critical": false,
+      "name": "hour_of_day",
+      "required": true,
+      "source": "derived",
+      "type": "int"
+    },
+    {
+      "critical": false,
+      "name": "day_of_week",
+      "required": false,
+      "source": "derived",
+      "type": "int"
+    },
+    {
+      "critical": false,
+      "name": "month",
+      "required": false,
+      "source": "derived",
+      "type": "int"
+    },
+    {
+      "critical": true,
+      "name": "days_since_last_irrigation",
+      "required": true,
+      "source": "irrigation_log",
+      "type": "int"
+    },
+    {
+      "critical": false,
+      "name": "soil_moisture_percent_t_minus_1",
+      "required": false,
+      "source": "sensor_history",
+      "type": "float"
+    },
+    {
+      "critical": false,
+      "name": "soil_moisture_percent_t_minus_2",
+      "required": false,
+      "source": "sensor_history",
+      "type": "float"
+    },
+    {
+      "critical": false,
+      "name": "delta_soil_moisture_percent_t_minus_1",
+      "required": false,
+      "source": "derived",
+      "type": "float"
+    },
+    {
+      "critical": false,
+      "name": "delta_soil_moisture_percent_t_minus_2",
+      "required": false,
+      "source": "derived",
+      "type": "float"
+    },
+    {
+      "critical": false,
+      "name": "time_since_last_irrigation_hours",
+      "required": false,
+      "source": "irrigation_log",
+      "type": "float"
+    },
+    {
+      "critical": false,
+      "name": "last_irrigation_duration_minutes",
+      "required": false,
+      "source": "irrigation_log",
+      "type": "float"
+    },
+    {
+      "critical": false,
+      "name": "rain_expected_flag",
+      "required": false,
+      "source": "weather_forecast",
+      "type": "int"
+    },
+    {
+      "critical": false,
+      "name": "temp_humidity_index",
+      "required": false,
+      "source": "derived",
+      "type": "float"
+    }
+  ],
+  "growth_stage_dat_ranges": {
+    "0_germination": [
+      0,
+      7
+    ],
+    "1_seedling": [
+      7,
+      25
+    ],
+    "2_tillering": [
+      25,
+      55
+    ],
+    "3_stem_elongation": [
+      55,
+      75
+    ],
+    "4_booting": [
+      75,
+      90
+    ],
+    "5_heading_flowering": [
+      90,
+      110
+    ],
+    "6_grain_filling": [
+      110,
+      130
+    ],
+    "7_ripening_maturity": [
+      130,
+      160
+    ]
+  },
+  "growth_stage_encoding": {
+    "0_germination": 0,
+    "1_seedling": 1,
+    "2_tillering": 2,
+    "3_stem_elongation": 3,
+    "4_booting": 4,
+    "5_heading_flowering": 5,
+    "6_grain_filling": 6,
+    "7_ripening_maturity": 7
+  },
+  "schema_version": "1.1"
+}

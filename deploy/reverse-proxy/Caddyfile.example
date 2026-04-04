@@ -1,0 +1,23 @@
+# AgroEdge dashboard — HTTPS reverse proxy (Caddy 2)
+#
+# Copy to e.g. /etc/caddy/Caddyfile.d/agroedge.caddy or merge into your site block.
+# Replace dashboard.example.com. Caddy obtains certificates automatically if
+# ports 80/443 are reachable from the internet.
+#
+# Upstream: Gunicorn or Flask on the Pi (default 127.0.0.1:5000).
+# Prefer binding the app to localhost only when using a reverse proxy:
+#   FLASK_RUN_HOST=127.0.0.1
+#   # or run_dashboard_gunicorn.sh with the same.
+
+dashboard.example.com {
+	encode zstd gzip
+	reverse_proxy 127.0.0.1:5000
+}
+
+# Optional: basic auth (hash password with: caddy hash-password)
+# dashboard.example.com {
+# 	basicauth /* {
+# 		agroedge JDJhJDE0JGV4YW1w...
+# 	}
+# 	reverse_proxy 127.0.0.1:5000
+# }

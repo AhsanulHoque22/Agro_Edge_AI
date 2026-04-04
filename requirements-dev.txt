@@ -1,0 +1,3 @@
+# Optional developer / CI tools
+# Install after base: pip install -r requirements.txt && pip install -r requirements-dev.txt
+ruff>=0.8.0

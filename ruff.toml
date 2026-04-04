@@ -1,0 +1,15 @@
+exclude = [
+    ".venv",
+    "datasets",
+    "model_export",
+    "logs",
+    "experiments",
+    ".pytest_cache",
+    "__pycache__",
+]
+line-length = 120
+target-version = "py311"
+
+[lint]
+select = ["E", "F", "I", "W"]
+ignore = []

@@ -1,0 +1,13 @@
+[Unit]
+Description=Periodic AgroEdge runtime health check
+Documentation=file:///home/pi/agroedge_ai/docs/DEPLOYMENT.md
+
+[Timer]
+Unit=agroedge-runtime-health.service
+OnBootSec=5min
+OnUnitActiveSec=15min
+AccuracySec=1min
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,144 @@
+# AgroEdge AI — ThingSpeak Channel Configuration
+# Version: 1.0
+#
+# ── HOW TO SET UP YOUR THINGSPEAK CHANNELS ────────────────────────────────────
+#
+# Step 1: Create a free account at https://thingspeak.com
+#
+# Step 2: Create Channel 1 — Environmental Sensors
+#   a. Go to Channels → New Channel
+#   b. Set Name to: rice_env
+#   c. Set Description to: AgroEdge environmental sensor readings
+#   d. Enable and name exactly the following fields:
+#        Field 1: soil_moisture_percent
+#        Field 2: soil_temperature_celsius
+#        Field 3: air_temperature_celsius
+#        Field 4: air_humidity_percent
+#        Field 5: light_intensity_lux
+#        Field 6: water_tank_level_percent
+#        Field 7: water_flow_rate_lph
+#        Field 8: reserved_future
+#   e. Save Channel
+#   f. Go to API Keys tab → copy Write API Key and Read API Key
+#   g. Copy the Channel ID from the channel URL or settings
+#
+# Step 3: Create Channel 2 — Irrigation Log
+#   a. Go to Channels → New Channel
+#   b. Set Name to: rice_irrigation
+#   c. Set Description to: AgroEdge irrigation event log
+#   d. Enable and name exactly the following fields:
+#        Field 1: irrigation_duration_minutes
+#        Field 2: trigger_source
+#        Field 3: soil_moisture_before_percent
+#        Field 4: soil_moisture_after_percent
+#        Field 5: node_id_hash
+#   e. Save Channel
+#   f. Copy Write API Key, Read API Key, and Channel ID
+#
+# Step 4: Add the following keys to your .env file:
+#   THINGSPEAK_ENV_CHANNEL_ID=<your channel 1 ID>
+#   THINGSPEAK_ENV_WRITE_API_KEY=<your channel 1 write key>
+#   THINGSPEAK_ENV_READ_API_KEY=<your channel 1 read key>
+#   THINGSPEAK_IRRIGATION_CHANNEL_ID=<your channel 2 ID>
+#   THINGSPEAK_IRRIGATION_WRITE_API_KEY=<your channel 2 write key>
+#   THINGSPEAK_IRRIGATION_READ_API_KEY=<your channel 2 read key>
+#
+# ── IMPORTANT RATE LIMIT ──────────────────────────────────────────────────────
+# ThingSpeak free tier enforces a minimum 15-second interval between writes.
+# The ESP32 must NOT publish more frequently than once every 15 seconds.
+# Recommended: publish every 15 minutes (900 seconds) for rice monitoring.
+# ──────────────────────────────────────────────────────────────────────────────
+
+schema_version: "1.0"
+
+channels:
+
+  environmental_sensors:
+    channel_name: "rice_env"
+    description: "Environmental sensor readings from the ESP32 node"
+    recommended_update_interval_seconds: 900    # 15 minutes
+
+    fields:
+      field1:
+        name: "soil_moisture_percent"
+        unit: "%"
+        maps_to: "SensorRecord.soil_moisture_percent"
+
+      field2:
+        name: "soil_temperature_celsius"
+        unit: "C"
+        maps_to: "SensorRecord.soil_temperature_celsius"
+
+      field3:
+        name: "air_temperature_celsius"
+        unit: "C"
+        maps_to: "SensorRecord.air_temperature_celsius"
+
+      field4:
+        name: "air_humidity_percent"
+        unit: "%"
+        maps_to: "SensorRecord.air_humidity_percent"
+
+      field5:
+        name: "light_intensity_lux"
+        unit: "lux"
+        maps_to: "SensorRecord.light_intensity_lux"
+
+      field6:
+        name: "water_tank_level_percent"
+        unit: "%"
+        maps_to: "SensorRecord.water_tank_level_percent"
+
+      field7:
+        name: "water_flow_rate_lph"
+        unit: "L/hr"
+        optional: true
+        maps_to: "SensorRecord.water_flow_rate_lph"
+
+      field8:
+        name: "reserved_future"
+        unit: ""
+        optional: true
+        maps_to: null
+        note: "Reserved for soil_ph or rainfall when sensor is added"
+
+  irrigation_log:
+    channel_name: "rice_irrigation"
+    description: "Irrigation events triggered by the AI decision engine"
+
+    fields:
+      field1:
+        name: "irrigation_duration_minutes"
+        unit: "min"
+        description: "Actual duration of the irrigation event"
+
+      field2:
+        name: "trigger_source"
+        unit: ""
+        description: "Source that triggered irrigation: 0=ai_model, 1=manual_override, 2=threshold_fallback"
+
+      field3:
+        name: "soil_moisture_before_percent"
+        unit: "%"
+        description: "Soil moisture reading immediately before irrigation"
+
+      field4:
+        name: "soil_moisture_after_percent"
+        unit: "%"
+        optional: true
+        description: "Soil moisture reading after irrigation completes (requires post-event delay)"
+
+      field5:
+        name: "node_id_hash"
+        unit: ""
+        description: "Numeric CRC32 hash of node_id for multi-node identification in a shared channel"
+
+# ── Required .env Keys ────────────────────────────────────────────────────────
+required_env_keys:
+  - THINGSPEAK_ENV_CHANNEL_ID
+  - THINGSPEAK_ENV_WRITE_API_KEY
+  - THINGSPEAK_ENV_READ_API_KEY
+  - THINGSPEAK_IRRIGATION_CHANNEL_ID
+  - THINGSPEAK_IRRIGATION_WRITE_API_KEY
+  - THINGSPEAK_IRRIGATION_READ_API_KEY
+  - THINGSPEAK_BASE_URL

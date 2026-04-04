@@ -1,0 +1,31 @@
+# AgroEdge AI — Python Dependencies
+# Install with: pip install -r requirements.txt
+
+# Schema validation and data modeling
+pydantic>=2.5.0
+
+# Data processing
+pandas>=2.1.0
+numpy>=1.26.0
+pyarrow>=14.0.0
+
+# Machine learning
+scikit-learn>=1.4.0
+joblib>=1.3.2
+
+# Configuration
+pyyaml>=6.0.1
+
+# Cloud integration
+requests>=2.31.0
+
+# Environment variable management
+python-dotenv>=1.0.0
+
+# Local monitoring dashboard (Raspberry Pi)
+flask>=3.0.0
+pillow>=10.0.0
+
+# Testing
+pytest>=7.4.0
+pytest-cov>=4.1.0

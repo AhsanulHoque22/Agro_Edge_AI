@@ -1,0 +1,49 @@
+# AgroEdge — disease image model (v0 scaffolding)
+# Real training expects RGB patches / embeddings under datasets/images/ (future).
+
+schema_version: "1.0"
+
+disease_model:
+  version: "0.1.0"
+  # v0 real-CV implementation uses grayscale pixel vectors and an MLP classifier.
+  # This is a baseline to replace the earlier "sanity baseline".
+  model_type: "image_pixels_mlp_multiclass"
+  n_classes: 8
+  # Must equal (resize_side * resize_side) for the image-pixels pipeline.
+  feature_dimension: 64
+  class_names:
+    - healthy
+    - rice_blast
+    - brown_spot
+    - bacterial_leaf_blight
+    - sheath_blight
+    - tungro
+    - leaf_scald
+    - unknown
+
+  export:
+    compression: 3
+
+  training:
+    mode: "image_pixels"
+    test_size: 0.2
+    random_state: 42
+    # Image preprocessing (pixel-vector embedding)
+    resize_side: 8
+    # MLP training knobs
+    max_iter: 60
+    hidden_layer_sizes:
+      - 128
+      - 64
+    early_stopping: true
+
+    # Kept for optional sanity baseline
+    sanity_samples: 800
+    sanity_random_state: 42
+
+  # Planned upgrade path (not active in current trainer).
+  tflite_target:
+    enabled: false
+    model_family: mobilenet_v2
+    input_image_size: [224, 224]
+    quantization: int8

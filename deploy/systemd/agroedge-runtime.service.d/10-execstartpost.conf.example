@@ -1,0 +1,13 @@
+# Optional drop-in: delayed health probe after runtime starts.
+#
+# Install:
+#   sudo mkdir -p /etc/systemd/system/agroedge-runtime.service.d/
+#   sudo cp deploy/systemd/agroedge-runtime.service.d/10-execstartpost.conf.example \
+#         /etc/systemd/system/agroedge-runtime.service.d/10-execstartpost.conf
+#   sudo systemctl daemon-reload
+#
+# Note: leading '-' ignores failure (recommended until first JSONL line exists).
+# After the scheduler has run at least once, you may remove '-' and use --require-ok-status.
+
+[Service]
+ExecStartPost=-/bin/bash -c 'sleep 120 && /home/pi/agroedge_ai/.venv/bin/python /home/pi/agroedge_ai/scripts/runtime_health_check.py --project-root /home/pi/agroedge_ai --log-path logs/runtime_cycles.jsonl --max-age-seconds 3600 --allow-missing-log'

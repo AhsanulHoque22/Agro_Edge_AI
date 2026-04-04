@@ -1,0 +1,174 @@
+schema_version: "1.1"
+
+# Irrigation model v1.1 feature vector.
+# Additive extension of v1.0 to improve temporal/context awareness.
+# Existing v1.0 schema remains unchanged in feature_schema.yaml.
+features:
+  - name: soil_moisture_percent
+    type: float
+    source: sensor
+    required: true
+    critical: true
+
+  - name: soil_temperature_celsius
+    type: float
+    source: sensor
+    required: true
+    critical: false
+
+  - name: air_temperature_celsius
+    type: float
+    source: sensor
+    required: true
+    critical: false
+
+  - name: air_humidity_percent
+    type: float
+    source: sensor
+    required: true
+    critical: false
+
+  - name: light_intensity_lux
+    type: float
+    source: sensor
+    required: true
+    critical: false
+
+  - name: water_tank_level_percent
+    type: float
+    source: sensor
+    required: true
+    critical: true
+
+  - name: growth_stage_encoded
+    type: int
+    source: farm_metadata
+    required: true
+    critical: true
+    encoding_map: growth_stage_encoding
+
+  - name: days_after_transplanting
+    type: int
+    source: derived
+    required: true
+    critical: false
+
+  - name: days_to_maturity
+    type: int
+    source: derived
+    required: true
+    critical: false
+
+  - name: vpd_kpa
+    type: float
+    source: derived
+    required: true
+    critical: false
+
+  - name: hour_of_day
+    type: int
+    source: derived
+    required: true
+    critical: false
+
+  - name: day_of_week
+    type: int
+    source: derived
+    required: false
+    critical: false
+
+  - name: month
+    type: int
+    source: derived
+    required: false
+    critical: false
+
+  - name: days_since_last_irrigation
+    type: int
+    source: irrigation_log
+    required: true
+    critical: true
+
+  # v1.1 additions: temporal moisture features
+  - name: soil_moisture_percent_t_minus_1
+    type: float
+    source: sensor_history
+    required: false
+    critical: false
+
+  - name: soil_moisture_percent_t_minus_2
+    type: float
+    source: sensor_history
+    required: false
+    critical: false
+
+  - name: delta_soil_moisture_percent_t_minus_1
+    type: float
+    source: derived
+    required: false
+    critical: false
+
+  - name: delta_soil_moisture_percent_t_minus_2
+    type: float
+    source: derived
+    required: false
+    critical: false
+
+  # v1.1 additions: irrigation context
+  - name: time_since_last_irrigation_hours
+    type: float
+    source: irrigation_log
+    required: false
+    critical: false
+
+  - name: last_irrigation_duration_minutes
+    type: float
+    source: irrigation_log
+    required: false
+    critical: false
+
+  # v1.1 additions: weather interaction
+  - name: rain_expected_flag
+    type: int
+    source: weather_forecast
+    required: false
+    critical: false
+
+  - name: temp_humidity_index
+    type: float
+    source: derived
+    required: false
+    critical: false
+
+growth_stage_encoding:
+  "0_germination": 0
+  "1_seedling": 1
+  "2_tillering": 2
+  "3_stem_elongation": 3
+  "4_booting": 4
+  "5_heading_flowering": 5
+  "6_grain_filling": 6
+  "7_ripening_maturity": 7
+
+growth_stage_dat_ranges:
+  "0_germination": [0, 7]
+  "1_seedling": [7, 25]
+  "2_tillering": [25, 55]
+  "3_stem_elongation": [55, 75]
+  "4_booting": [75, 90]
+  "5_heading_flowering": [90, 110]
+  "6_grain_filling": [110, 130]
+  "7_ripening_maturity": [130, 160]
+
+crop_type_encoding:
+  rice: 0
+
+disease_labels:
+  - healthy
+  - rice_blast
+  - brown_spot
+  - bacterial_leaf_blight
+  - sheath_blight
+  - tungro
+  - leaf_scald
+  - unknown

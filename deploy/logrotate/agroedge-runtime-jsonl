@@ -1,0 +1,14 @@
+# Logrotate snippet for AgroEdge runtime JSONL logs.
+# Install: copy to /etc/logrotate.d/agroedge-runtime-jsonl
+# Adjust paths to match AGROEDGE_HOME on the Raspberry Pi.
+
+/home/pi/agroedge_ai/logs/runtime_cycles*.jsonl {
+    weekly
+    rotate 8
+    compress
+    delaycompress
+    missingok
+    notifempty
+    copytruncate
+    su pi pi
+}

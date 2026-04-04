@@ -1,0 +1,13 @@
+{
+  "class_distribution_validation": {
+    "0": 2099,
+    "1": 1966
+  },
+  "holdout_ratio": 0.2,
+  "input": "datasets/raw/v1_1/training_records.parquet",
+  "n_non_validation": 15935,
+  "n_total": 20000,
+  "n_validation": 4065,
+  "output": "datasets/validation/fixed_v1_1/validation_records.parquet",
+  "salt": "agroedge_fixed_validation_v1_1"
+}

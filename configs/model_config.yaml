@@ -1,0 +1,135 @@
+# AgroEdge AI — Model Training Configuration
+# Version: 1.0
+#
+# Contains hyperparameters, training settings, and performance thresholds
+# for all models. This file is the single source of truth for training runs.
+# Changing values here does not require code changes.
+
+schema_version: "1.0"
+
+# ── Irrigation Decision Model ─────────────────────────────────────────────────
+
+irrigation_model:
+  model_type: random_forest
+  version: "1.0.0"
+
+  # Training targets
+  classification_target: irrigation_needed        # binary (0/1)
+  regression_target: irrigation_duration_minutes  # continuous (float)
+
+  # Feature list — must exactly match feature_schema.yaml order.
+  # Changing this list requires retraining.
+  features:
+    - soil_moisture_percent
+    - soil_temperature_celsius
+    - air_temperature_celsius
+    - air_humidity_percent
+    - light_intensity_lux
+    - water_tank_level_percent
+    - growth_stage_encoded
+    - days_after_transplanting
+    - days_to_maturity
+    - vpd_kpa
+    - hour_of_day
+    - day_of_week
+    - month
+    - days_since_last_irrigation
+
+  # Dataset split ratios (must sum to 1.0)
+  splits:
+    train:      0.70
+    validation: 0.20
+    test:       0.10
+  random_state: 42
+
+  # ── Random Forest Classifier (irrigation_needed) ──────────────────────────
+  classifier_hyperparameters:
+    n_estimators:      150
+    max_depth:         12
+    min_samples_split: 5
+    min_samples_leaf:  2
+    max_features:      sqrt
+    class_weight:      balanced   # handles imbalanced irrigation/no-irrigation labels
+    random_state:      42
+    n_jobs:            -1         # use all CPU cores during training
+
+  # ── Random Forest Regressor (irrigation_duration_minutes) ─────────────────
+  regressor_hyperparameters:
+    n_estimators:      150
+    max_depth:         12
+    min_samples_split: 5
+    min_samples_leaf:  2
+    max_features:      sqrt
+    random_state:      42
+    n_jobs:            -1
+
+  # ── Cross-Validation ───────────────────────────────────────────────────────
+  cross_validation:
+    strategy:     k_fold
+    n_splits:     5
+    shuffle:      true
+    random_state: 42
+
+  # ── Export Settings ────────────────────────────────────────────────────────
+  export:
+    format:                joblib
+    compression:           3      # 0=none, 9=max; 3 balances size and speed
+    include_feature_names: true
+
+  # ── Minimum Performance Gates ──────────────────────────────────────────────
+  # Training will fail if these thresholds are not met on the test split.
+  # This prevents deploying a poorly-trained model to the Raspberry Pi.
+  minimum_performance:
+    classifier_f1_score:    0.80
+    classifier_accuracy:    0.82
+    regressor_r2_score:     0.75
+    regressor_mae_minutes:  10.0   # mean absolute error must be ≤ 10 minutes
+
+# ── Crop Disease Detection Model (Future) ─────────────────────────────────────
+
+disease_model:
+  status: planned     # not yet implemented
+  model_type: mobilenetv2
+  version: "1.0.0"
+  input_image_size: [224, 224]
+  export_format: tflite
+  disease_classes:
+    - healthy
+    - rice_blast
+    - brown_spot
+    - bacterial_leaf_blight
+    - sheath_blight
+    - tungro
+    - leaf_scald
+
+# ── Synthetic Dataset Generation ──────────────────────────────────────────────
+
+synthetic_data:
+  target_records:   20000
+  random_seed:      42
+  dataset_version:  "v1"
+
+  # Rice water requirements by growth stage (mm/day).
+  # Ranges are intentionally wide to cover indica, japonica, and hybrid varieties.
+  # Source: FAO Irrigation and Drainage Paper No. 33 (rice water requirements).
+  stage_water_requirements_mm_per_day:
+    "0_germination":       [3,  6]
+    "1_seedling":          [4,  8]
+    "2_tillering":         [6,  10]
+    "3_stem_elongation":   [7,  12]
+    "4_booting":           [8,  14]
+    "5_heading_flowering": [9,  15]   # highest water demand
+    "6_grain_filling":     [6,  10]
+    "7_ripening_maturity": [2,  5]    # field drainage begins
+
+  # Soil moisture thresholds that trigger irrigation, by growth stage (%).
+  # Below the lower bound → irrigate. Above the upper bound → do not irrigate.
+  irrigation_trigger_thresholds:
+    "0_germination":       [60, 70]
+    "1_seedling":          [55, 70]
+    "2_tillering":         [50, 65]
+    "3_stem_elongation":   [50, 65]
+    "4_booting":           [60, 75]
+    "5_heading_flowering": [65, 80]   # critical stage — highest moisture requirement
+    "6_grain_filling":     [55, 70]
+    "7_ripening_maturity": [30, 45]   # deliberate drying before harvest

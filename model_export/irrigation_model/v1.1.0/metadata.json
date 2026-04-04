@@ -1,0 +1,8 @@
+{
+  "exported_at_utc": "2026-03-21T09:53:19.223889+00:00",
+  "feature_count": 22,
+  "model_name": "irrigation_model",
+  "model_type": "random_forest",
+  "schema_version": "1.1",
+  "version": "1.1.0"
+}

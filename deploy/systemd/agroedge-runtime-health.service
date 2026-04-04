@@ -1,0 +1,21 @@
+[Unit]
+Description=AgroEdge runtime JSONL health check (oneshot)
+Documentation=file:///home/pi/agroedge_ai/docs/DEPLOYMENT.md
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=pi
+Group=pi
+WorkingDirectory=/home/pi/agroedge_ai
+EnvironmentFile=-/etc/agroedge/runtime.env
+Environment=PYTHONUNBUFFERED=1
+
+# Match runtime scheduler poll interval + slack (adjust if you change --interval-seconds)
+ExecStart=/home/pi/agroedge_ai/.venv/bin/python /home/pi/agroedge_ai/scripts/runtime_health_check.py \
+  --project-root /home/pi/agroedge_ai \
+  --log-path logs/runtime_cycles.jsonl \
+  --max-age-seconds 2700 \
+  --allow-missing-log
+
+SyslogIdentifier=agroedge-health

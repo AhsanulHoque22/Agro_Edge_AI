@@ -1,0 +1,25 @@
+{
+  "crop_type_encoding": {
+    "rice": 0
+  },
+  "disease_labels": [
+    "healthy",
+    "rice_blast",
+    "brown_spot",
+    "bacterial_leaf_blight",
+    "sheath_blight",
+    "tungro",
+    "leaf_scald",
+    "unknown"
+  ],
+  "growth_stage_encoding": {
+    "0_germination": 0,
+    "1_seedling": 1,
+    "2_tillering": 2,
+    "3_stem_elongation": 3,
+    "4_booting": 4,
+    "5_heading_flowering": 5,
+    "6_grain_filling": 6,
+    "7_ripening_maturity": 7
+  }
+}

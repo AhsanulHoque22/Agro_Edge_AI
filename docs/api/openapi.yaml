@@ -1,0 +1,448 @@
+openapi: 3.0.3
+info:
+  title: AgroEdge Local Dashboard API
+  description: |
+    Read-only HTTP API exposed by the Flask monitoring dashboard on the Raspberry Pi.
+    Describes **this service only** — not ThingSpeak REST or ESP32 firmware.
+
+    **Optional authentication:** if `AGROEDGE_DASHBOARD_BASIC_USER` and
+    `AGROEDGE_DASHBOARD_BASIC_PASSWORD` are set, endpoints other than `GET /health`
+    return `401` without a valid `Authorization: Basic` header. When those variables
+    are unset, all listed routes are anonymous (same as today).
+  version: 1.0.0
+  license:
+    name: Proprietary
+
+servers:
+  - url: /
+    description: Same origin as the dashboard process
+
+paths:
+  /health:
+    get:
+      summary: Liveness probe
+      operationId: health
+      tags: [Monitoring]
+      security: []
+      responses:
+        "200":
+          description: Process is up
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "ok\n"
+
+  /:
+    get:
+      summary: Dashboard home (HTML)
+      operationId: getDashboardHome
+      tags: [Runtime]
+      security:
+        - dashboardBasic: []
+      description: |
+        Read-only HTML view of the last runtime cycle and links to JSON/OpenAPI endpoints.
+      responses:
+        "401":
+          description: Basic auth required (when dashboard credentials are configured)
+          content:
+            text/plain:
+              schema:
+                type: string
+        "200":
+          description: HTML page
+          content:
+            text/html:
+              schema:
+                type: string
+
+  /api/last-cycle:
+    get:
+      summary: Last recorded runtime cycle (JSONL tail)
+      operationId: getLastCycle
+      tags: [Runtime]
+      security:
+        - dashboardBasic: []
+      description: |
+        Reads the last non-empty JSON object from `AGROEDGE_RUNTIME_LOG` (default `logs/runtime_cycles.jsonl`).
+      responses:
+        "401":
+          description: Basic auth required (when dashboard credentials are configured)
+          content:
+            text/plain:
+              schema:
+                type: string
+        "200":
+          description: Log file exists and contains at least one JSON line
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LastCycleOk"
+        "503":
+          description: Log missing or empty
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LastCycleError"
+
+  /api/disease/predict:
+    post:
+      summary: Disease model inference (feature vector)
+      operationId: postDiseasePredict
+      tags: [Disease]
+      security:
+        - dashboardBasic: []
+      description: |
+        Multiclass prediction for rice disease.
+
+        Input is either:
+          - numeric **feature vector** in JSON (`{"features": [...]}`)
+          - **image payload** in JSON (`{"image_base64": "..."}`) or later multipart
+
+        The current implementation converts images to a fixed-length
+        grayscale pixel-vector embedding before running the classifier
+        (default 64 dims, matching the exported model `feature_dimension`).
+
+        Bundle path: environment variable `AGROEDGE_DISEASE_BUNDLE`, or default
+        `model_export/disease_model/v0.1.0` under the project root.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DiseasePredictRequest"
+      responses:
+        "401":
+          description: Basic auth required (when dashboard credentials are configured)
+          content:
+            text/plain:
+              schema:
+                type: string
+        "413":
+          description: Image payload too large
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DiseasePredictError"
+        "400":
+          description: Invalid JSON or feature length
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DiseasePredictError"
+        "503":
+          description: Disease bundle missing or unloadable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DiseasePredictError"
+        "200":
+          description: Prediction result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DiseasePredictResponse"
+
+  /api/disease/last:
+    get:
+      summary: Last disease prediction
+      operationId: getDiseaseLast
+      tags: [Disease]
+      security:
+        - dashboardBasic: []
+      description: |
+        Returns the last JSON line from `AGROEDGE_DISEASE_LOG` (default `logs/disease_predictions.jsonl`).
+      responses:
+        "200":
+          description: Disease log contains at least one JSON line
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DiseaseLastOk"
+        "503":
+          description: Disease log missing or empty
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DiseaseLastError"
+
+  /api/disease/history:
+    get:
+      summary: Recent disease predictions (JSONL tail)
+      operationId: getDiseaseHistory
+      tags: [Disease]
+      security:
+        - dashboardBasic: []
+      parameters:
+        - in: query
+          name: limit
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+          description: Number of recent rows to return (default 5).
+      description: |
+        Returns the last `limit` JSON lines from `AGROEDGE_DISEASE_LOG` (newest-first).
+      responses:
+        "200":
+          description: Disease log contains at least one JSON line
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DiseaseHistoryOk"
+        "503":
+          description: Disease log missing or empty
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DiseaseHistoryError"
+
+  /api/thingspeak-links:
+    get:
+      summary: ThingSpeak channel web links (read-only)
+      operationId: getThingSpeakLinks
+      tags: [External]
+      security:
+        - dashboardBasic: []
+      description: |
+        Returns URLs on `AGROEDGE_THINGSPEAK_WEB_BASE` (default `https://thingspeak.com`) for any of
+        `THINGSPEAK_ENV_CHANNEL_ID` / `THINGSPEAK_IRRIGATION_CHANNEL_ID` set in the environment.
+      responses:
+        "401":
+          description: Basic auth required (when dashboard credentials are configured)
+          content:
+            text/plain:
+              schema:
+                type: string
+        "200":
+          description: Always returns a list (may be empty if no channel IDs configured)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ThingSpeakLinksResponse"
+
+  /api/openapi.yaml:
+    get:
+      summary: OpenAPI document (YAML)
+      operationId: getOpenApiYaml
+      tags: [Meta]
+      security:
+        - dashboardBasic: []
+      responses:
+        "401":
+          description: Basic auth required (when dashboard credentials are configured)
+          content:
+            text/plain:
+              schema:
+                type: string
+        "200":
+          description: OpenAPI 3.0 specification
+          content:
+            application/yaml:
+              schema:
+                type: string
+        "404":
+          description: Specification file not deployed
+
+  /api/openapi.json:
+    get:
+      summary: OpenAPI document (JSON)
+      operationId: getOpenApiJson
+      tags: [Meta]
+      security:
+        - dashboardBasic: []
+      responses:
+        "401":
+          description: Basic auth required (when dashboard credentials are configured)
+          content:
+            text/plain:
+              schema:
+                type: string
+        "200":
+          description: OpenAPI 3.0 specification as JSON
+        "404":
+          description: Specification file not deployed
+
+components:
+  securitySchemes:
+    dashboardBasic:
+      type: http
+      scheme: basic
+      description: |
+        Enabled only when `AGROEDGE_DASHBOARD_BASIC_USER` and
+        `AGROEDGE_DASHBOARD_BASIC_PASSWORD` are set in the server environment.
+
+  schemas:
+    LastCycleOk:
+      type: object
+      required: [ok, path, row]
+      properties:
+        ok:
+          type: boolean
+          example: true
+        path:
+          type: string
+          description: Absolute path to the JSONL file read
+        row:
+          type: object
+          description: Last JSON object from the log (schema defined by runtime scheduler)
+          additionalProperties: true
+
+    LastCycleError:
+      type: object
+      required: [ok, error, path]
+      properties:
+        ok:
+          type: boolean
+          example: false
+        error:
+          type: string
+          example: no_log
+        path:
+          type: string
+
+    ThingSpeakLinksResponse:
+      type: object
+      required: [ok, links]
+      properties:
+        ok:
+          type: boolean
+          example: true
+        links:
+          type: array
+          items:
+            type: object
+            required: [label, channel_id, url]
+            properties:
+              label:
+                type: string
+              channel_id:
+                type: string
+              url:
+                type: string
+                format: uri
+
+    DiseasePredictRequest:
+      type: object
+      properties:
+        features:
+          type: array
+          items:
+            type: number
+          description: Length must match exported model feature_dimension (e.g. 64)
+          minItems: 1
+        image_base64:
+          type: string
+          description: >
+            Base64-encoded image payload. The server converts it to a fixed-length
+            feature vector using a placeholder grayscale resize (default 64 dims).
+            Send either `features` or `image_base64`.
+
+    DiseasePredictResponse:
+      type: object
+      required: [ok, disease_class_name, disease_class_index, model_version, inferred_at_utc]
+      properties:
+        ok:
+          type: boolean
+          example: true
+        disease_class_name:
+          type: string
+          example: healthy
+        disease_class_index:
+          type: integer
+        probabilities:
+          type: object
+          additionalProperties:
+            type: number
+          nullable: true
+        model_version:
+          type: string
+        inferred_at_utc:
+          type: string
+          format: date-time
+
+    DiseasePredictError:
+      type: object
+      required: [ok, error]
+      properties:
+        ok:
+          type: boolean
+          example: false
+        error:
+          type: string
+          example: disease_bundle_unavailable
+        path:
+          type: string
+        hint:
+          type: string
+        message:
+          type: string
+        expected_feature_dim:
+          type: integer
+
+    DiseaseLastOk:
+      type: object
+      required: [ok, path, row]
+      properties:
+        ok:
+          type: boolean
+          example: true
+        path:
+          type: string
+        row:
+          type: object
+          additionalProperties: true
+
+    DiseaseLastError:
+      type: object
+      required: [ok, error, path]
+      properties:
+        ok:
+          type: boolean
+          example: false
+        error:
+          type: string
+          example: no_disease_log
+        path:
+          type: string
+
+    DiseaseHistoryOk:
+      type: object
+      required: [ok, path, rows]
+      properties:
+        ok:
+          type: boolean
+          example: true
+        path:
+          type: string
+        rows:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+
+    DiseaseHistoryError:
+      type: object
+      required: [ok, error, path]
+      properties:
+        ok:
+          type: boolean
+          example: false
+        error:
+          type: string
+          example: no_disease_log
+        path:
+          type: string
+
+tags:
+  - name: Monitoring
+    description: Process health
+  - name: Runtime
+    description: Local runtime cycle log
+  - name: External
+    description: Pointers to ThingSpeak web UI
+  - name: Meta
+    description: API self-description
+  - name: Disease
+    description: Rice disease model (feature-vector inference; images TBD)

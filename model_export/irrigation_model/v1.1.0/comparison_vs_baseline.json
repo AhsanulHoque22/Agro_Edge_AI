@@ -1,0 +1,31 @@
+{
+  "baseline": "/home/ahsanul-hoque/Desktop/AgroEdge/agroedge_ai/datasets/validation/fixed_v1_1/baseline_evaluation.json",
+  "candidate": "/home/ahsanul-hoque/Desktop/AgroEdge/agroedge_ai/model_export/irrigation_model/v1.1.0/evaluation.json",
+  "comparison": {
+    "classifier_accuracy": {
+      "baseline": 0.9445069366329208,
+      "candidate": 0.9482564679415073,
+      "delta_candidate_minus_baseline": 0.0037495313085864623
+    },
+    "classifier_f1_score": {
+      "baseline": 0.9417322834645669,
+      "candidate": 0.9454976303317536,
+      "delta_candidate_minus_baseline": 0.0037653468671866586
+    },
+    "regressor_mae_minutes": {
+      "baseline": 4.891001749896871,
+      "candidate": 3.0582772399389175,
+      "delta_candidate_minus_baseline": -1.8327245099579534
+    },
+    "regressor_mae_minutes_when_irrigating": {
+      "baseline": 5.889630064860703,
+      "candidate": 4.036540732085931,
+      "delta_candidate_minus_baseline": -1.853089332774772
+    },
+    "regressor_r2_score": {
+      "baseline": 0.9384654228824143,
+      "candidate": 0.9610516085006255,
+      "delta_candidate_minus_baseline": 0.02258618561821124
+    }
+  }
+}
