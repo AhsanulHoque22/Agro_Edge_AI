@@ -1,3 +1,4 @@
+HEAD
 # AgroEdge AI
 
 AI-first precision-agriculture stack: **data pipeline**, **irrigation model training**, **edge inference**, **ThingSpeak integration**, and a **minimal local dashboard** (Raspberry Pi).
@@ -58,3 +59,7 @@ OpenAPI 3.0: [docs/api/openapi.yaml](docs/api/openapi.yaml) — also served at `
 ## License
 
 Proprietary — all rights reserved unless otherwise stated by the project owner.
+
+# Agro_Edge_AI
+Smart AI for farmers
+521623f24fda793256e93b2bbf1224f28feaca47
